@@ -1,4 +1,4 @@
-const API_KEY = '79ac8a8306899ad3e8e9d7e8aa40a528';
+const API_KEY = 'KEY';
 
 // Function to fetch current weather data
 export const fetchCurrentWeather = async (latitude, longitude) => {
