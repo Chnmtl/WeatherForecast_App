@@ -1,13 +1,66 @@
 import { View, ImageBackground, TextInput, FlatList, TouchableOpacity, Text, StyleSheet, ScrollView } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import BottomWeatherCard from "../components/ui/BottomWeatherCard";
 import TopWeatherCard from "../components/ui/TopWeatherCard";
 import Colors from "../constants/Colors";
 
-import { fetchCurrentWeather } from "../components/api/AccuWeatherAPI";
+import { fetchCurrentWeather, fetchLocationWeather } from "../components/api/OpenWeatherAPI";
+import * as Location from "expo-location";
 
 function HomePageScreen() {
+
+  const [searchLocation, setSearchLocation] = useState('');
+  const [weatherData, setWeatherData] = useState(null);
+
+  // const handleLocationSearch = async () => {
+  //   try {
+  //     // Call the fetchLocationWeather function to get weather data for the searched location
+  //     const response = await fetchLocationWeather(searchLocation);
+  //     console.log("response: " + response)
+  //     setWeatherData(response);
+  //   } catch (error) {
+  //     console.error("Error fetching location weather:", error);
+  //   }
+  // };
+
+  const handleLocationSearch = async () => {
+    try {
+      if (searchLocation.trim() === "") {
+        // If the input is empty, fetch the current location's weather data again
+        await fetchLocationWeather();
+      } else {
+        // Call the fetchLocationWeather function to get weather data for the searched location
+        const response = await fetchLocationWeather(searchLocation);
+        console.log("response: " + response);
+        setWeatherData(response);
+      }
+    } catch (error) {
+      console.error("Error fetching location weather:", error);
+    }
+  };  
+
+  useEffect(() => {
+    const fetchCurrentLocationWeather = async () => {
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+          throw new Error("Location permission denied");
+        }
+
+        let location = await Location.getCurrentPositionAsync({});
+        const { latitude, longitude } = location.coords;
+
+        const response = await fetchCurrentWeather(latitude, longitude);
+
+        setWeatherData(response);
+      } catch (error) {
+        console.error("Error fetching current weather:", error);
+      }
+    };
+
+    fetchCurrentLocationWeather();
+  }, []);
 
   return (
     <ImageBackground
@@ -15,11 +68,17 @@ function HomePageScreen() {
       style={styles.bgStyle}
       resizeMode="contain"
       imageStyle={styles.bgImage}
-    >  
+    >
       <View style={styles.mainView}>
-        <TextInput style={styles.search} />
+        <TextInput
+          style={styles.search}
+          value={searchLocation}
+          onChangeText={setSearchLocation}
+          placeholder="Search location..."
+          onSubmitEditing={handleLocationSearch}
+        />
 
-        <TopWeatherCard />
+        <TopWeatherCard weatherData={weatherData} onLocationSearch={handleLocationSearch} />
 
         <ScrollView
           horizontal={true}
@@ -70,21 +129,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  searchContainer: {
-    position: "relative",
-    marginTop: 16,
-  },
-  search: {
-    borderWidth: 1,
-    borderColor: Colors.secondary,
-    borderRadius: 8,
-    padding: 8,
-  },
-  suggestionText: {
-    padding: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.secondary,
-  },
 });
 
 {

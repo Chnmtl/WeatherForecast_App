@@ -1,7 +1,7 @@
-import { Text, StyleSheet, View, Image } from "react-native";
+import { Text, StyleSheet, View, Image, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from 'react';
 
-import { fetchCurrentWeather } from "../api/AccuWeatherAPI";
+import { fetchCurrentWeather } from "../api/OpenWeatherAPI";
 import * as Location from "expo-location";
 
 import Colors from "../../constants/Colors";
@@ -30,10 +30,10 @@ const months = [
   "Dec",
 ];
 
-function TopWeatherCard() {
+function TopWeatherCard({ weatherData, onLocationSearch }) {
 
   const [date, setDate] = useState("");
-  const [weatherData, setWeatherData] = useState(null);
+  // const [weatherData, setWeatherData] = useState(null);
 
   useEffect(() => {
     setInterval(() => {
@@ -46,45 +46,48 @@ function TopWeatherCard() {
     }, 1000);
   }, []);
 
-  useEffect(() => {
-    const fetchCurrentWeatherData = async () => {
-      try {
-        // Request permission to access location
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-          throw new Error("Location permission denied");
-        }
+  // useEffect(() => {
+  //   const fetchCurrentWeatherData = async () => {
+  //     try {
+  //       // Request permission to access location
+  //       let { status } = await Location.requestForegroundPermissionsAsync();
+  //       if (status !== "granted") {
+  //         throw new Error("Location permission denied");
+  //       }
 
-        // Get the user's current location
-        let location = await Location.getCurrentPositionAsync({});
-        // console.log(Location)
-        const { latitude, longitude } = location.coords;
-        // Make the API call to fetch the current weather using the obtained location
-        const response = await fetchCurrentWeather(latitude, longitude);
+  //       // Get the user's current location
+  //       let location = await Location.getCurrentPositionAsync({});
+  //       // console.log(Location)
+  //       const { latitude, longitude } = location.coords;
+  //       // Make the API call to fetch the current weather using the obtained location
+  //       const response = await fetchCurrentWeather(latitude, longitude);
 
-        // Process the response and update the state with the weather data
-        setWeatherData(response);
-      } catch (error) {
-        console.error("Error fetching current weather:", error);
-      }
-    };
+  //       // Process the response and update the state with the weather data
+  //       setWeatherData(response);
+  //     } catch (error) {
+  //       console.error("Error fetching current weather:", error);
+  //     }
+  //   };
 
-    fetchCurrentWeatherData();
-  }, []);
+  //   fetchCurrentWeatherData();
+  // }, []);
 
   return (
     <View style={styles.topCardView}>
       <View style={styles.topCard}>
         <View style={styles.city}>
-          <Text style={styles.cityText}>{weatherData ? weatherData.city : "N/A"}</Text>
+          <Text style={styles.cityText}>{weatherData?.city || "N/A"}</Text>
         </View>
         <Text style={styles.dateText}>{date}</Text>
         <View style={styles.weatherCard}>
-          <Text style={styles.weatherText}> {weatherData ? weatherData.temperature + "°C" : "N/A"}</Text>
-          <Text style={styles.weatherText}> {weatherData ? weatherData.weatherCondition : "N/A"}</Text>
+          <Text style={styles.weatherText}>{weatherData?.temperature ? weatherData.temperature + "°C" : "N/A"}</Text>
+          <Text style={styles.weatherText}>{weatherData?.weatherCondition || "N/A"}</Text>
         </View>
       </View>
-    </View> 
+      {/* <TouchableOpacity onPress={onLocationSearch}>
+        <Text>Search Location</Text>
+      </TouchableOpacity> */}
+    </View>
   );
 }
 
