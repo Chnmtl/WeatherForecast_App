@@ -13,43 +13,53 @@ function HomePageScreen() {
   const [searchLocation, setSearchLocation] = useState('');
   const [weatherData, setWeatherData] = useState(null);
 
-  const handleLocationSearch = async () => {
-    try {
-      if (searchLocation.trim() === "") {
-        // If the input is empty, fetch the current location's weather data again
-        await fetchLocationWeather();
-      } else {
-        // Call the fetchLocationWeather function to get weather data for the searched location
-        const response = await fetchLocationWeather(searchLocation);
-        console.log("response: " + response);
-        setWeatherData(response);
-      }
-    } catch (error) {
-      console.error("Error fetching location weather:", error);
-    }
-  };  
-
   useEffect(() => {
-    const fetchCurrentLocationWeather = async () => {
+    const requestLocationPermission = async () => {
       try {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== "granted") {
           throw new Error("Location permission denied");
         }
 
-        let location = await Location.getCurrentPositionAsync({});
-        const { latitude, longitude } = location.coords;
-
-        const response = await fetchCurrentWeather(latitude, longitude);
-        console.log("response"+ JSON.stringify(response))
-        setWeatherData(response);
+        await fetchCurrentLocationWeather(); // Fetch current location's weather data
       } catch (error) {
-        console.error("Error fetching current weather:", error);
+        console.error("Error requesting location permission:", error);
+        setWeatherData(null); // Set a default value for weatherData when there's an error
       }
     };
 
-    fetchCurrentLocationWeather();
+    requestLocationPermission();
   }, []);
+
+  const fetchCurrentLocationWeather = async () => {
+    try {
+      let location = await Location.getCurrentPositionAsync({});
+      const { latitude, longitude } = location.coords;
+
+      const response = await fetchCurrentWeather(latitude, longitude);
+      console.log("response: " + response);
+      setWeatherData(response);
+    } catch (error) {
+      console.error("Error fetching current weather:", error);
+      throw error;
+    }
+  };
+
+  const handleLocationSearch = async () => {
+    try {
+      if (searchLocation.trim() === "") {
+        await fetchCurrentLocationWeather();
+        
+      } else {
+        const response = await fetchLocationWeather(searchLocation);
+        console.log("response: " + response);
+        setWeatherData(response);
+      }
+    } catch (error) {
+      console.error("Error fetching location weather:", error);
+      setWeatherData(null); // Set a default value for weatherData when there's an error
+    }
+  };
 
   return (
     <ImageBackground
@@ -67,8 +77,8 @@ function HomePageScreen() {
           onSubmitEditing={handleLocationSearch}
         />
 
-        <TopWeatherCard weatherData={weatherData} onLocationSearch={handleLocationSearch} />
-
+        <TopWeatherCard weatherData={weatherData} />
+        {/* onLocationSearch={handleLocationSearch} */}
         <ScrollView
           horizontal={true}
           showsHorizontalScrollIndicator={false}
