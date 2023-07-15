@@ -1,4 +1,4 @@
-const API_KEY = 'KEY';
+import { API_KEY } from '../../config.js';
 
 // Function to fetch current weather data
 export const fetchCurrentWeather = async (latitude, longitude) => {
@@ -7,11 +7,11 @@ export const fetchCurrentWeather = async (latitude, longitude) => {
       `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=metric`
     );
     const data = await response.json();
-    console.log(data)  
+    console.log(JSON.stringify(data))  
     if (response.ok) {
       return {
         city: data.name,
-        temperature: data.main.temp,
+        temperature: parseInt(data.main.temp),
         weatherCondition: data.weather[0].main, 
       };
     } else {
@@ -36,7 +36,7 @@ export const fetchLocationWeather = async (location) => {
     if (response.ok) {
       return {
         city: data.name,
-        temperature: data.main.temp,
+        temperature: parseInt(data.main.temp),
         weatherCondition: data.weather[0].main,
       };
     } else {
