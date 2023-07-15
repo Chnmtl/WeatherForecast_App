@@ -45,17 +45,3 @@ const styles = StyleSheet.create({
   },
 });
 
-{
-  /* <LinearGradient
-        colors={[Colors.primary, Colors.thirdary]}
-        style={styles.gradientBackground}
-      >
-      </LinearGradient> 
-    
-    <LinearGradient
-        colors={[Colors.primary, Colors.thirdary]}
-        style={styles.gradientBackground}
-      >
-      </LinearGradient>
-    */
-}
