@@ -1,9 +1,6 @@
 import { Text, StyleSheet, View, Image, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from 'react';
 
-import { fetchCurrentWeather } from "../api/OpenWeatherAPI";
-import * as Location from "expo-location";
-
 import Colors from "../../constants/Colors";
 
 const dayNames = [
@@ -30,10 +27,9 @@ const months = [
   "Dec",
 ];
 
-function TopWeatherCard({ weatherData, onLocationSearch }) {
+function TopWeatherCard({ weatherData }) {
 
   const [date, setDate] = useState("");
-  // const [weatherData, setWeatherData] = useState(null);
 
   useEffect(() => {
     setInterval(() => {
@@ -46,32 +42,6 @@ function TopWeatherCard({ weatherData, onLocationSearch }) {
     }, 1000);
   }, []);
 
-  // useEffect(() => {
-  //   const fetchCurrentWeatherData = async () => {
-  //     try {
-  //       // Request permission to access location
-  //       let { status } = await Location.requestForegroundPermissionsAsync();
-  //       if (status !== "granted") {
-  //         throw new Error("Location permission denied");
-  //       }
-
-  //       // Get the user's current location
-  //       let location = await Location.getCurrentPositionAsync({});
-  //       // console.log(Location)
-  //       const { latitude, longitude } = location.coords;
-  //       // Make the API call to fetch the current weather using the obtained location
-  //       const response = await fetchCurrentWeather(latitude, longitude);
-
-  //       // Process the response and update the state with the weather data
-  //       setWeatherData(response);
-  //     } catch (error) {
-  //       console.error("Error fetching current weather:", error);
-  //     }
-  //   };
-
-  //   fetchCurrentWeatherData();
-  // }, []);
-
   return (
     <View style={styles.topCardView}>
       <View style={styles.topCard}>
@@ -83,10 +53,7 @@ function TopWeatherCard({ weatherData, onLocationSearch }) {
           <Text style={styles.weatherText}>{weatherData?.temperature ? weatherData.temperature + "°C" : "N/A"}</Text>
           <Text style={styles.weatherText}>{weatherData?.weatherCondition || "N/A"}</Text>
         </View>
-      </View>
-      {/* <TouchableOpacity onPress={onLocationSearch}>
-        <Text>Search Location</Text>
-      </TouchableOpacity> */}
+      </View>      
     </View>
   );
 }

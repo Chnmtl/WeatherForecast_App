@@ -13,17 +13,6 @@ function HomePageScreen() {
   const [searchLocation, setSearchLocation] = useState('');
   const [weatherData, setWeatherData] = useState(null);
 
-  // const handleLocationSearch = async () => {
-  //   try {
-  //     // Call the fetchLocationWeather function to get weather data for the searched location
-  //     const response = await fetchLocationWeather(searchLocation);
-  //     console.log("response: " + response)
-  //     setWeatherData(response);
-  //   } catch (error) {
-  //     console.error("Error fetching location weather:", error);
-  //   }
-  // };
-
   const handleLocationSearch = async () => {
     try {
       if (searchLocation.trim() === "") {
@@ -52,7 +41,7 @@ function HomePageScreen() {
         const { latitude, longitude } = location.coords;
 
         const response = await fetchCurrentWeather(latitude, longitude);
-
+        console.log("response"+ JSON.stringify(response))
         setWeatherData(response);
       } catch (error) {
         console.error("Error fetching current weather:", error);
@@ -130,12 +119,3 @@ const styles = StyleSheet.create({
   },
 
 });
-
-{
-  /* <ImageBackground
-      source={require("../assets/BackgroundImages/Rainy.png")}
-      style={styles.rootScreen}
-      resizeMode="contain"
-      imageStyle={styles.bgImage}
-    ></ImageBackground> */
-}
