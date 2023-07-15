@@ -1,5 +1,6 @@
 import { Text, StyleSheet, View, Image, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from 'react';
+import moment from 'moment';
 
 import Colors from "../../constants/Colors";
 
@@ -32,14 +33,9 @@ function TopWeatherCard({ weatherData }) {
   const [date, setDate] = useState("");
 
   useEffect(() => {
-    setInterval(() => {
-      const curDate = new Date();
-      const dayName = curDate.getDay();
-      const day = curDate.getDate();
-      const month = curDate.getMonth();
-
-      setDate(dayNames[dayName] + ", " + months[month] + " " + day);
-    }, 1000);
+    const currentDate = new Date();
+    const formattedDate = moment(currentDate).format('dddd, MMM DD');
+    setDate(formattedDate);
   }, []);
 
   return (
